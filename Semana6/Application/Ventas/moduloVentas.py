@@ -1,3 +1,4 @@
+import traceback
 from  PyQt6 import QtCore,QtGui,QtWidgets
 from UI.Ventas.uiFactura import Ui_UIFactura
 from UI.Ventas.uiImprimir import Ui_UIImprimir
@@ -45,6 +46,38 @@ class FrmImprimir(QtWidgets.QDialog):
         self.ui = Ui_UIImprimir()
         self.ui.setupUi(self)
         self.ui.btnImprimir.clicked.connect(self.imprimirFacturas)
+        self.ui.btnEliminarFactura.clicked.connect(self.eliminarFactura)
+        
+     
+    def eliminarFactura(self):
+        try:
+            numFacturas = self.ui.tblFacturas.rowCount()
+            if numFacturas <= 0:
+                msg = QtWidgets.QMessageBox()
+                msg.setIcon(QtWidgets.QMessageBox.Icon.Information)
+                msg.setWindowTitle("Validación")
+                msg.setText("Actualmente no existen facturas registradas")
+                msg.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Ok)
+                msg.exec()
+                return
+            
+            filaSeleccionada = self.ui.tblFacturas.selectedItems()
+            if not filaSeleccionada:
+                msg = QtWidgets.QMessageBox()
+                msg.setIcon(QtWidgets.QMessageBox.Icon.Information)
+                msg.setWindowTitle("Validación")
+                msg.setText("Debe seleccionar una factura por eliminar")
+                msg.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Ok)
+                msg.exec()                 
+            
+            self.ui.tblFacturas.removeRow(filaSeleccionada[0].row())         
+        except BaseException:
+            msg = QtWidgets.QMessageBox()
+            msg.setIcon(QtWidgets.QMessageBox.Icon.Critical)
+            msg.setWindowTitle("Error general")
+            msg.setText(traceback.format_exc())
+            msg.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Ok)
+            msg.exec()    
         
     def imprimirFacturas(self):
         self.ui.tblFacturas.setRowCount(0)
